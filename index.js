@@ -4,7 +4,7 @@ const fs = require("fs");
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
-const youtubeStream = require('youtube-audio-stream');
+const ytdl = require('ytdl-core');
 
 
 
@@ -231,6 +231,7 @@ const commandProcessor = new (require('./command_processor'))([
                 msg.reply(`Connection is not established`);
                 return;
             }
+            voiceConnection = undefined;
             msg.reply(`Successfully disconnected!`);
             playSong();
         }
@@ -300,11 +301,11 @@ function playSong(msg) {
             }
             if (songId >= playlist.length) songId = 0;
             let url = playlist[songId];
+            if (msg) msg.reply(`Playing ${url}`);
             if (voiceConnection) {
-                voiceConnection.play(youtubeStream(url).on("error", console.log)).on("speaking", speaking => {
-                    if (!speaking) {
-                        playSong(null);
-                    }
+                voiceConnection.play(ytdl(url, { filter: "audioonly", quality: "highestaudio", highWaterMark: 1 << 15 }).on("error", console.log)).on("end", () => {
+                    console.log("end");
+                    playSong(msg);
                 });
             } else {
                 if (msg) msg.reply(`Please connect this bot to a channel via -select_channel`);

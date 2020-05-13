@@ -10,11 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@ffmpeg-installer/ffmpeg": "^1.0.20",
-    "discord.js": "^12.2.0",
-    "ffmpeg": "0.0.4",
+    "@ffmpeg-installer/ffmpeg": "latest",
+    "discord.js": "latest",
+    "ffmpeg": "latest",
     "fluent-ffmpeg": "latest",
-    "node": "^14.2.0",
-    "youtube-audio-stream": "^0.3.5"
+    "node": "latest",
+    "youtube-audio-stream": "latest",
+    "ytdl-core": "latest"
   }
 }
