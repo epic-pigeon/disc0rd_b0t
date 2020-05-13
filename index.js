@@ -9,8 +9,9 @@ const ytdl = require('ytdl-core');
 
 
 let playlists = {};
-let currentPlaylist, songId, voiceConnection, playMode = "consequent";
+let currentPlaylist, songId, voiceConnection, playMode = "consequent", currentStream;
 let bannedIds = [];
+let stopped = false;
 
 const Playlists = Object.freeze({
     save() {
@@ -250,6 +251,16 @@ const commandProcessor = new (require('./command_processor'))([
         }
     },
     {
+        name: "stop",
+        description: "Stops playing",
+        adminOnly: false,
+        usage: "-stop",
+        action: function (msg, arguments) {
+            stopped = true;
+            currentStream.destroy();
+        }
+    },
+    {
         name: "play_playlist",
         description: "Plays a playlist",
         adminOnly: false,
@@ -317,9 +328,10 @@ function playSong(msg) {
             let url = playlist[songId];
             if (msg) msg.reply(`Playing ${url}`);
             if (voiceConnection) {
-                voiceConnection.play(ytdl(url, { filter: "audioonly", quality: "highestaudio", highWaterMark: 1 << 25 }).on("error", console.log)).on("speaking", (speaking) => {
+                voiceConnection.play(currentStream = ytdl(url, { filter: "audioonly", quality: "highestaudio", highWaterMark: 1 << 25 }).on("error", console.log)).on("speaking", (speaking) => {
                     console.log(speaking);
-                    if (!speaking) playSong(msg);
+                    if (!speaking && !stopped) playSong(msg);
+                    if (stopped) stopped = false;
                 });
             } else {
                 if (msg) msg.reply(`Please connect this bot to a channel via -select_channel`);
