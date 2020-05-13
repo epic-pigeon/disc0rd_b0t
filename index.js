@@ -317,4 +317,4 @@ function playSong(msg) {
     }
 }
 
-client.login("NzEwMTA4MDk2MjQ4MTUyMTU1.Xrvpzg.fxBOQ748TkPEcozQ7qUskOv5olY");
+client.login(process.argv[0]);
