@@ -303,7 +303,7 @@ function playSong(msg) {
             let url = playlist[songId];
             if (msg) msg.reply(`Playing ${url}`);
             if (voiceConnection) {
-                voiceConnection.play(ytdl(url, { filter: "audioonly", quality: "highestaudio", highWaterMark: 1 << 15 }).on("error", console.log)).on("end", () => {
+                voiceConnection.play(ytdl(url, { filter: "audioonly", quality: "highestaudio", highWaterMark: 1 << 25 }).on("error", console.log)).on("end", () => {
                     console.log("end");
                     playSong(msg);
                 });
