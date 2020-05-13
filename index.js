@@ -262,7 +262,7 @@ const commandProcessor = new (require('./command_processor'))([
             let name = arguments.shift().value;
             if (playlists[name]) {
                 currentPlaylist = name;
-                songId = 0;
+                songId = undefined;
                 playSong(msg);
             } else {
                 msg.reply(`Playlist '${name}' does not exist!`);
