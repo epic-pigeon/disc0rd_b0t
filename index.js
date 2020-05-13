@@ -317,4 +317,4 @@ function playSong(msg) {
     }
 }
 
-client.login(process.argv[0]);
+client.login(process.argv[2]);
