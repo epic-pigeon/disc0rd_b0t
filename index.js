@@ -237,6 +237,19 @@ const commandProcessor = new (require('./command_processor'))([
         }
     },
     {
+        name: "play_next",
+        description: "Plays the next song",
+        adminOnly: false,
+        usage: "-play_next",
+        action: function (msg, arguments) {
+            if (currentPlaylist && typeof songId !== "undefined") {
+                playSong(msg);
+            } else {
+                msg.reply(`Playlist is not defined`);
+            }
+        }
+    },
+    {
         name: "play_playlist",
         description: "Plays a playlist",
         adminOnly: false,
@@ -249,6 +262,7 @@ const commandProcessor = new (require('./command_processor'))([
             let name = arguments.shift().value;
             if (playlists[name]) {
                 currentPlaylist = name;
+                songId = 0;
                 playSong(msg);
             } else {
                 msg.reply(`Playlist '${name}' does not exist!`);
@@ -303,9 +317,9 @@ function playSong(msg) {
             let url = playlist[songId];
             if (msg) msg.reply(`Playing ${url}`);
             if (voiceConnection) {
-                voiceConnection.play(ytdl(url, { filter: "audioonly", quality: "highestaudio", highWaterMark: 1 << 25 }).on("error", console.log)).on("end", () => {
-                    console.log("end");
-                    playSong(msg);
+                voiceConnection.play(ytdl(url, { filter: "audioonly", quality: "highestaudio", highWaterMark: 1 << 25 }).on("error", console.log)).on("speaking", (speaking) => {
+                    console.log(speaking);
+                    if (!speaking) playSong(msg);
                 });
             } else {
                 if (msg) msg.reply(`Please connect this bot to a channel via -select_channel`);
