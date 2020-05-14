@@ -14,7 +14,7 @@ function gc() {
     }
 }
 
-let startTime = Date.now();
+let startTime = new Date();
 
 let songs = 0;
 
@@ -313,7 +313,7 @@ function start() {
             adminOnly: false,
             usage: "-stats",
             action: function (msg, arguments) {
-                let result = `Seconds running: ${ (Date.now().getTime() - startTime.getTime()) / 1000 }\n`;
+                let result = `Seconds running: ${ (new Date().getTime() - startTime.getTime()) / 1000 }\n`;
                 result += `Heap memory usage: ${process.memoryUsage().heapUsed}b\n`;
                 result += `Songs played: ${songs}\n`;
                 result += `Current channel: ${voiceConnection ? voiceConnection.channel.name : "none"}`;
