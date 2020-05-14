@@ -6,17 +6,9 @@ const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
 const ytdl = require('ytdl-core');
 
-/*
-const memwatch = require("node-memwatch");
-
-memwatch.on('stats', function(stats) {
-    console.log("memwatch stats", stats);
-});
-
-memwatch.on('leak', function(leak) {
-    console.log("memwatch leak", leak);
-});
-*/
+setTimeout(() => {
+    console.log("Mem usage", process.memoryUsage().heapUsed);
+}, 1000);
 
 function start() {
     let playlists = {};
