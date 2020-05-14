@@ -339,6 +339,7 @@ function playSong(msg) {
                 if (voiceConnection) {
                     if (msg) msg.reply(`Playing ${url}`);
                     try {
+                        if (currentStream && !currentStream.destroyed) currentStream.destroy();
                         currentStream = ytdl(url, {
                             filter: "audioonly",
                             quality: "highestaudio",
