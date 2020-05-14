@@ -109,16 +109,20 @@ const commandProcessor = new (require('./command_processor'))([
     },
     {
         name: "add_to_playlist",
-        description: "Adds a song to a playlist",
+        description: "Adds a song by youtube ID to a playlist",
         adminOnly: false,
-        usage: "-add_to_playlist 'name' 'youtube url'",
+        usage: "-add_to_playlist 'name' 'youtube id'",
         action: function (msg, arguments) {
             if (arguments.length < 2) {
-                msg.reply("Usage: -add_to_playlist 'name' 'youtube url'");
+                msg.reply("Usage: -add_to_playlist 'name' 'youtube id'");
                 return;
             }
             let name = arguments.shift().value;
-            let url = arguments.shift().value;
+            let id = arguments.shift().value;
+            if (!id.matches(/[^?&"'>]+/)) {
+                msg.reply(`${id} is not a youtube video id`);
+            }
+            let url = `https://www.youtube.com/watch?v=${id}`;
             let result = Playlists.addSong(name, url);
             if (result) {
                 msg.reply(`Song '${url}' added to playlist '${name}'!`);
@@ -326,10 +330,10 @@ function playSong(msg) {
             }
             if (songId >= playlist.length) songId = 0;
             let url = playlist[songId];
-            if (msg) msg.reply(`Playing ${url}`);
             if (voiceConnection) {
-                voiceConnection.play(currentStream = ytdl(url, { filter: "audioonly", quality: "highestaudio", highWaterMark: 1 << 25 }).on("error", console.log)).on("speaking", (speaking) => {
-                    console.log(speaking);
+                if (msg) msg.reply(`Playing ${url}`);
+                currentStream = ytdl(url, { filter: "audioonly", quality: "highestaudio", highWaterMark: 1 << 25 }).on("error", err => msg.reply(`Error: ${err.toString()}`));
+                voiceConnection.play(currentStream).on("error", err => msg.reply(`Error: ${err.toString()}`)).on("speaking", (speaking) => {
                     if (!speaking && !stopped) playSong(msg);
                     if (stopped) stopped = false;
                 });
