@@ -14,6 +14,10 @@ function gc() {
     }
 }
 
+let startTime = Date.now();
+
+let songs = 0;
+
 setInterval(() => {
     console.log("Mem usage", process.memoryUsage().heapUsed);
 }, 1000);
@@ -284,6 +288,39 @@ function start() {
             }
         },
         {
+            name: "shutdown",
+            description: "Shuts down the bot",
+            adminOnly: true,
+            usage: "-shutdown",
+            action: function (msg, arguments) {
+                console.log("Shutdown requested");
+                process.exit(0);
+            }
+        },
+        {
+            name: "gc",
+            description: "Runs the garbage collector",
+            adminOnly: true,
+            usage: "-gc",
+            action: function (msg, arguments) {
+                console.log("GC requested");
+                gc();
+            }
+        },
+        {
+            name: "stats",
+            description: "Shows some stats",
+            adminOnly: false,
+            usage: "-stats",
+            action: function (msg, arguments) {
+                let result = `Seconds running: ${ (Date.now().getTime() - startTime.getTime()) / 1000 }\n`;
+                result += `Heap memory usage: ${process.memoryUsage().heapUsed}b\n`;
+                result += `Songs played: ${songs}\n`;
+                result += `Current channel: ${voiceConnection ? voiceConnection.channel.name : "none"}`;
+                msg.reply(result);
+            }
+        },
+        {
             name: "play_next",
             description: "Plays the next song",
             adminOnly: false,
@@ -401,6 +438,7 @@ function start() {
                         try {
                             if (currentStream && !currentStream.destroyed) currentStream.destroy();
                             createYoutubeStream(url).then(stream => {
+                                songs++;
                                 currentStream = stream.on("error", err => {
                                     msg.reply(`Error: ${err.toString()}`);
                                 });
