@@ -224,6 +224,10 @@ function start() {
                 }
                 let id = arguments.shift().value;
                 if (voiceConnection) {
+                    if (voiceConnection.channel.id === id)  {
+                        msg.reply(`I'm already in ${id}`);
+                        return;
+                    }
                     voiceConnection.on("disconnect", async () => {
                         let newConnection;
                         try {
