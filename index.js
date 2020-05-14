@@ -115,7 +115,7 @@ function start() {
             usage: "!create_playlist 'name'",
             action: function (msg, arguments) {
                 if (arguments.length < 1) {
-                    msg.reply("Usage: -create_playlist 'name'");
+                    msg.reply("Usage: !create_playlist 'name'");
                     return;
                 }
                 let name = arguments.shift().value;
@@ -134,7 +134,7 @@ function start() {
             usage: "!add_to_playlist 'name' 'youtube id'",
             action: function (msg, arguments) {
                 if (arguments.length < 2) {
-                    msg.reply("Usage: -add_to_playlist 'name' 'youtube id'");
+                    msg.reply("Usage: !add_to_playlist 'name' 'youtube id'");
                     return;
                 }
                 let name = arguments.shift().value;
@@ -159,7 +159,7 @@ function start() {
             usage: "!delete_from_playlist 'name' 'youtube ID'",
             action: function (msg, arguments) {
                 if (arguments.length < 2) {
-                    msg.reply("Usage: -delete_from_playlist 'name' 'youtube ID'");
+                    msg.reply("Usage: !delete_from_playlist 'name' 'youtube ID'");
                     return;
                 }
                 let name = arguments.shift().value;
@@ -183,7 +183,7 @@ function start() {
             usage: "!delete_playlist 'name'",
             action: function (msg, arguments) {
                 if (arguments.length < 1) {
-                    msg.reply("Usage: -delete_playlist 'name'");
+                    msg.reply("Usage: !delete_playlist 'name'");
                     return;
                 }
                 let name = arguments.shift().value;
@@ -202,7 +202,7 @@ function start() {
             usage: "!playlist_songs 'name'",
             action: function (msg, arguments) {
                 if (arguments.length < 1) {
-                    msg.reply("Usage: -playlist_songs 'name'");
+                    msg.reply("Usage: !playlist_songs 'name'");
                     return;
                 }
                 let name = arguments.shift().value;
@@ -233,7 +233,7 @@ function start() {
             usage: "!select_channel 'id'",
             action: async function (msg, arguments) {
                 if (arguments.length < 1) {
-                    msg.reply("Usage: -select_channel 'id'");
+                    msg.reply("Usage: !select_channel 'id'");
                     return;
                 }
                 let id = arguments.shift().value;
@@ -266,6 +266,54 @@ function start() {
                     voiceConnection = newConnection;
                     msg.reply(`Successfully connected to ${id}`);
                     playSong();
+                }
+            }
+        },
+        {
+            name: "ban",
+            description: "Bans a user from using this bot",
+            adminOnly: true,
+            usage: "!ban 'id'",
+            action: function (msg, arguments) {
+                if (arguments.length < 1) {
+                    msg.reply("Usage: !ban 'id'");
+                    return;
+                }
+                let id = arguments.shift().value;
+                if (bannedIds.indexOf(id) === -1) {
+                    let member = msg.guild.members.find(member => member.user.id === id);
+                    if (member) {
+                        bannedIds.push(id);
+                        msg.reply(`User '${member.user.tag}' banned!`);
+                    } else {
+                        msg.reply(`This user is not in this server`);
+                    }
+                } else {
+                    msg.reply(`This user is already banned`);
+                }
+            }
+        },
+        {
+            name: "unban",
+            description: "Unbans a user from using this bot",
+            adminOnly: true,
+            usage: "!unban 'id'",
+            action: function (msg, arguments) {
+                if (arguments.length < 1) {
+                    msg.reply("Usage: !unban 'id'");
+                    return;
+                }
+                let id = arguments.shift().value;
+                if (bannedIds.indexOf(id) === -1) {
+                    msg.reply("This user is not banned");
+                } else {
+                    bannedIds = bannedIds.filter(kar => kar !== id);
+                    let member = msg.guild.members.find(member => member.user.id === id);
+                    if (member) {
+                        msg.reply(`User '${member.user.tag}' unbanned!`);
+                    } else {
+                        msg.reply(`This user is not in this server, unbanning him nonetheless`);
+                    }
                 }
             }
         },
@@ -351,7 +399,7 @@ function start() {
             usage: "!play_playlist 'name'",
             action: function (msg, arguments) {
                 if (arguments.length < 1) {
-                    msg.reply("Usage: -play_playlist 'name'");
+                    msg.reply("Usage: !play_playlist 'name'");
                     return;
                 }
                 let name = arguments.shift().value;
@@ -371,7 +419,7 @@ function start() {
             usage: "!set_play_mode 'consequent|random'",
             action: function (msg, arguments) {
                 if (arguments.length < 1) {
-                    msg.reply("Usage: -set_play_mode 'consequent|random'");
+                    msg.reply("Usage: !set_play_mode 'consequent|random'");
                     return;
                 }
                 let mode = arguments.shift().value;
@@ -389,6 +437,9 @@ function start() {
         if (msg.author.bot) return;
         if (msg.content.indexOf('!') !== 0) return;
         if (msg.channel.id !== "710439016935456768") return;
+        if (bannedIds.indexOf(msg.author.id) !== -1) {
+            msg.reply("You are banned");
+        }
         //msg.reply(msg.content.slice(1));
         console.log(msg.author.tag + ': ' + msg.content.slice(1));
         try {
