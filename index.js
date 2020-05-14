@@ -369,12 +369,17 @@ function start() {
                         if (msg) msg.reply(`Playing ${url}`);
                         try {
                             if (currentStream && !currentStream.destroyed) currentStream.destroy();
-                            currentStream = createYoutubeStream(url).on("error", err => {
-                                msg.reply(`Error: ${err.toString()}, retrying...`);
-                            });
-                            voiceConnection.play(currentStream).on("error", err => msg.reply(`Error: ${err.toString()}`)).on("speaking", (speaking) => {
-                                if (!speaking) playSong(msg);
-                            });
+                            createYoutubeStream(url).then(stream => {
+                                currentStream = stream.on("error", err => {
+                                    msg.reply(`Error: ${err.toString()}`);
+                                });
+                                voiceConnection.play(currentStream).on("error", err => msg.reply(`Error: ${err.toString()}`)).on("speaking", (speaking) => {
+                                    if (!speaking) playSong(msg);
+                                });
+                            }).catch(err => {
+                                msg.reply(`Error: ${err.toString()}`);
+                            })
+
                         } catch (err) {
                             msg.reply(`Error: ${err.toString()}`);
                         }
