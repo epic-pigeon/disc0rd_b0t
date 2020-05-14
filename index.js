@@ -11,7 +11,6 @@ const ytdl = require('ytdl-core');
 let playlists = {};
 let currentPlaylist, songId, voiceConnection, playMode = "consequent", currentStream;
 let bannedIds = [];
-let stopped = false;
 
 const Playlists = Object.freeze({
     save() {
@@ -265,7 +264,8 @@ const commandProcessor = new (require('./command_processor'))([
         adminOnly: false,
         usage: "-stop",
         action: function (msg, arguments) {
-            stopped = true;
+            currentPlaylist = undefined;
+            songId = undefined;
             currentStream.destroy();
         }
     },
@@ -323,33 +323,42 @@ client.on('message', msg => {
 });
 
 function playSong(msg) {
-    if (currentPlaylist && playlists[currentPlaylist]) {
-        let playlist = playlists[currentPlaylist];
-        if (playlist.length > 0) {
-            if (typeof songId === "undefined") {
-                songId = 0;
-            } else if (playMode === "consequent") {
-                songId = songId+1;
-            } else if (playMode === "random") {
-                songId = Math.floor(Math.random() * playlist.length);
-            }
-            if (songId >= playlist.length) songId = 0;
-            let url = playlist[songId];
-            if (voiceConnection) {
-                if (msg) msg.reply(`Playing ${url}`);
-                currentStream = ytdl(url, { filter: "audioonly", quality: "highestaudio", highWaterMark: 1 << 25 }).on("error", err => msg.reply(`Error: ${err.toString()}`));
-                voiceConnection.play(currentStream).on("error", err => msg.reply(`Error: ${err.toString()}`)).on("speaking", (speaking) => {
-                    if (!speaking && !stopped) playSong(msg);
-                    if (stopped) stopped = false;
-                });
+    if (currentPlaylist) {
+        if (playlists[currentPlaylist]) {
+            let playlist = playlists[currentPlaylist];
+            if (playlist.length > 0) {
+                if (typeof songId === "undefined") {
+                    songId = 0;
+                } else if (playMode === "consequent") {
+                    songId = songId + 1;
+                } else if (playMode === "random") {
+                    songId = Math.floor(Math.random() * playlist.length);
+                }
+                if (songId >= playlist.length) songId = 0;
+                let url = playlist[songId];
+                if (voiceConnection) {
+                    if (msg) msg.reply(`Playing ${url}`);
+                    try {
+                        currentStream = ytdl(url, {
+                            filter: "audioonly",
+                            quality: "highestaudio",
+                            highWaterMark: 1 << 25
+                        }).on("error", err => msg.reply(`Error: ${err.toString()}`));
+                        voiceConnection.play(currentStream).on("error", err => msg.reply(`Error: ${err.toString()}`)).on("speaking", (speaking) => {
+                            if (!speaking) playSong(msg);
+                        });
+                    } catch (err) {
+                        msg.reply(`Error: ${err.toString()}`);
+                    }
+                } else {
+                    if (msg) msg.reply(`Please connect this bot to a channel via -select_channel`);
+                }
             } else {
-                if (msg) msg.reply(`Please connect this bot to a channel via -select_channel`);
+                if (msg) msg.reply(`Playlist ${currentPlaylist} is empty`);
             }
         } else {
-            if (msg) msg.reply(`Playlist ${currentPlaylist} is empty`);
+            if (msg) msg.reply(`The playlist ${currentPlaylist} does not exist`);
         }
-    } else {
-        if (msg) msg.reply(`The playlist is either not specified or does not exist`);
     }
 }
 
