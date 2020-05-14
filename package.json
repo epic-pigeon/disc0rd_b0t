@@ -16,6 +16,7 @@
     "fluent-ffmpeg": "latest",
     "node": "latest",
     "youtube-audio-stream": "latest",
-    "ytdl-core": "latest"
+    "ytdl-core": "latest",
+    "node-memwatch": "latest"
   }
 }
