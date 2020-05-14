@@ -222,22 +222,29 @@ function start() {
                     msg.reply("Usage: -select_channel 'id'");
                     return;
                 }
-                let newConnection;
                 let id = arguments.shift().value;
-                try {
-                    newConnection = await (await client.channels.fetch(id)).join();
-                } catch (e) {
-                    msg.reply(`An error occurred: ${e.toString()}`);
-                    return;
-                }
                 if (voiceConnection) {
-                    voiceConnection.on("disconnect", () => {
+                    voiceConnection.on("disconnect", async () => {
+                        let newConnection;
+                        try {
+                            newConnection = await (await client.channels.fetch(id)).join();
+                        } catch (e) {
+                            msg.reply(`An error occurred: ${e.toString()}`);
+                            return;
+                        }
                         voiceConnection = newConnection;
                         msg.reply(`Successfully connected to ${id}`);
                         playSong();
                     });
                     voiceConnection.disconnect();
                 } else {
+                    let newConnection;
+                    try {
+                        newConnection = await (await client.channels.fetch(id)).join();
+                    } catch (e) {
+                        msg.reply(`An error occurred: ${e.toString()}`);
+                        return;
+                    }
                     voiceConnection = newConnection;
                     msg.reply(`Successfully connected to ${id}`);
                     playSong();
