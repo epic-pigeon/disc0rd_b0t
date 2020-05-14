@@ -281,7 +281,7 @@ function start() {
                 }
                 let id = arguments.shift().value;
                 if (bannedIds.indexOf(id) === -1) {
-                    let member = msg.guild.members.find(member => member.user.id === id);
+                    let member = msg.guild.members.cache.find(member => member.user.id === id);
                     if (member) {
                         bannedIds.push(id);
                         msg.reply(`User '${member.user.tag}' banned!`);
@@ -308,7 +308,7 @@ function start() {
                     msg.reply("This user is not banned");
                 } else {
                     bannedIds = bannedIds.filter(kar => kar !== id);
-                    let member = msg.guild.members.find(member => member.user.id === id);
+                    let member = msg.guild.members.cache.find(member => member.user.id === id);
                     if (member) {
                         msg.reply(`User '${member.user.tag}' unbanned!`);
                     } else {
