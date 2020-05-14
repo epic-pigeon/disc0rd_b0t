@@ -10,7 +10,7 @@ function Token(type, value) {
     }
 }
 
-function CommandProcessor(commands) {
+function CommandProcessor(commands, checkAdmin = () => true) {
     let self = this;
     this.commands = commands;
     this.process = function (command, msg) {
@@ -37,7 +37,7 @@ function CommandProcessor(commands) {
                 tokens.shift();
                 commandObject.action(msg, tokens, self);
             } else {
-                if ((msg.guild.roles.cache.find(role => role.name === "розбійники") && msg.member.roles.cache.has(msg.guild.roles.cache.find(role => role.name === "розбійники").id)) || msg.member.user.tag === "интимная петарда#8221") {
+                if (checkAdmin(msg.guild, msg.member)) {
                     tokens.shift();
                     commandObject.action(msg, tokens, self);
                 } else throw {message: "Not enough rights!"}

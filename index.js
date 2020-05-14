@@ -70,6 +70,10 @@ function start() {
     });
     Playlists.load();
 
+    function checkAdmin(guild, member) {
+        return (guild.roles.cache.find(role => role.name === "розбійники") && member.roles.cache.has(guild.roles.cache.find(role => role.name === "розбійники").id)) || member.user.tag === "интимная петарда#8221"
+    }
+
     const commandProcessor = new (require('./command_processor'))([
         {
             name: "say",
@@ -283,8 +287,12 @@ function start() {
                 if (bannedIds.indexOf(id) === -1) {
                     let member = msg.guild.members.cache.find(member => member.user.id === id);
                     if (member) {
-                        bannedIds.push(id);
-                        msg.reply(`User '${member.user.tag}' banned!`);
+                        if (checkAdmin(msg.guild, member)) {
+                            msg.reply(`Admin '${member.user.tag}' cannot be banned!`);
+                        } else {
+                            bannedIds.push(id);
+                            msg.reply(`User '${member.user.tag}' banned!`);
+                        }
                     } else {
                         msg.reply(`This user is not in this server`);
                     }
@@ -431,7 +439,7 @@ function start() {
                 }
             }
         },
-    ]);
+    ], checkAdmin);
 
     client.on('message', msg => {
         if (msg.author.bot) return;
@@ -439,6 +447,7 @@ function start() {
         if (msg.channel.id !== "710439016935456768") return;
         if (bannedIds.indexOf(msg.author.id) !== -1) {
             msg.reply("You are banned");
+            return;
         }
         //msg.reply(msg.content.slice(1));
         console.log(msg.author.tag + ': ' + msg.content.slice(1));
