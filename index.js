@@ -309,6 +309,7 @@ function start() {
                 let mode = arguments.shift().value;
                 if (mode === "consequent" || mode === "random") {
                     playMode = mode;
+                    msg.reply(`Mode '${mode}' is set!`);
                 } else {
                     msg.reply(`Mode '${mode}' does not exist!`);
                 }
