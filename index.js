@@ -312,6 +312,7 @@ const commandProcessor = new (require('./command_processor'))([
 client.on('message', msg => {
     if (msg.author.bot) return;
     if (msg.content.indexOf('-') !== 0) return;
+    if (msg.channel.id !== "710156576257867849")
     //msg.reply(msg.content.slice(1));
     console.log(msg.author.tag + ': ' + msg.content.slice(1));
     try {
