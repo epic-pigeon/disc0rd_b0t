@@ -330,6 +330,26 @@ function start() {
             msg.reply(e.message);
         }
     });
+    
+    function createYoutubeStream(url, count) {
+        return new Promise((resolve, reject) => {
+            if (typeof count !== "number") count = 0;
+            if (count > 10) reject(new Error(`Failed to fetch ${url}, are you sure it is right?`));
+            let stream = ytdl(url, {
+                filter: "audioonly",
+                quality: "highestaudio",
+                highWaterMark: 1 << 25
+            });
+            let success = false;
+            stream.on("error", () => {
+                if (!success) createYoutubeStream(url, count+1).then(resolve).catch(reject);
+            });
+            stream.on("response", () => {
+                success = true;
+                resolve(stream);
+            });
+        });
+    }
 
     function playSong(msg) {
         if (currentPlaylist) {
@@ -349,11 +369,9 @@ function start() {
                         if (msg) msg.reply(`Playing ${url}`);
                         try {
                             if (currentStream && !currentStream.destroyed) currentStream.destroy();
-                            currentStream = ytdl(url, {
-                                filter: "audioonly",
-                                quality: "highestaudio",
-                                highWaterMark: 1 << 25
-                            }).on("error", err => msg.reply(`Error: ${err.toString()}`));
+                            currentStream = createYoutubeStream(url).on("error", err => {
+                                msg.reply(`Error: ${err.toString()}, retrying...`);
+                            });
                             voiceConnection.play(currentStream).on("error", err => msg.reply(`Error: ${err.toString()}`)).on("speaking", (speaking) => {
                                 if (!speaking) playSong(msg);
                             });
