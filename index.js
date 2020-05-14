@@ -121,6 +121,7 @@ const commandProcessor = new (require('./command_processor'))([
             let id = arguments.shift().value;
             if (!id.matches(/[^?&"'>]+/)) {
                 msg.reply(`${id} is not a youtube video id`);
+                return;
             }
             let url = `https://www.youtube.com/watch?v=${id}`;
             let result = Playlists.addSong(name, url);
@@ -133,17 +134,21 @@ const commandProcessor = new (require('./command_processor'))([
     },
     {
         name: "delete_from_playlist",
-        description: "Deletes a song from a playlist",
+        description: "Deletes a song from a playlist by ID",
         adminOnly: false,
-        usage: "-delete_from_playlist 'name' 'youtube url'",
+        usage: "-delete_from_playlist 'name' 'youtube ID'",
         action: function (msg, arguments) {
             if (arguments.length < 2) {
-                msg.reply("Usage: -delete_from_playlist 'name' 'youtube url'");
+                msg.reply("Usage: -delete_from_playlist 'name' 'youtube ID'");
                 return;
             }
             let name = arguments.shift().value;
-            let url = arguments.shift().value;
-            let result = Playlists.deleteSong(name, url);
+            let id = arguments.shift().value;
+            if (!id.matches(/[^?&"'>]+/)) {
+                msg.reply(`${id} is not a youtube video id`);
+                return;
+            }
+            let result = Playlists.deleteSong(name, `https://www.youtube.com/watch?v=${id}`);
             if (result) {
                 msg.reply(`Song '${url}' deleted from playlist '${name}'!`);
             } else {
