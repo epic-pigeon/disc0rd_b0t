@@ -75,7 +75,7 @@ function start() {
             name: "say",
             description: "Writes down all the arguments given",
             adminOnly: false,
-            usage: "-say 'arg1' 'arg2' ...",
+            usage: "!say 'arg1' 'arg2' ...",
             action: function (msg, arguments) {
                 arguments.forEach(arg => {
                     msg.reply(arg.value)
@@ -112,7 +112,7 @@ function start() {
             name: "create_playlist",
             description: "Creates a playlist",
             adminOnly: false,
-            usage: "-create_playlist 'name'",
+            usage: "!create_playlist 'name'",
             action: function (msg, arguments) {
                 if (arguments.length < 1) {
                     msg.reply("Usage: -create_playlist 'name'");
@@ -131,7 +131,7 @@ function start() {
             name: "add_to_playlist",
             description: "Adds a song by youtube ID to a playlist",
             adminOnly: false,
-            usage: "-add_to_playlist 'name' 'youtube id'",
+            usage: "!add_to_playlist 'name' 'youtube id'",
             action: function (msg, arguments) {
                 if (arguments.length < 2) {
                     msg.reply("Usage: -add_to_playlist 'name' 'youtube id'");
@@ -156,7 +156,7 @@ function start() {
             name: "delete_from_playlist",
             description: "Deletes a song from a playlist by ID",
             adminOnly: false,
-            usage: "-delete_from_playlist 'name' 'youtube ID'",
+            usage: "!delete_from_playlist 'name' 'youtube ID'",
             action: function (msg, arguments) {
                 if (arguments.length < 2) {
                     msg.reply("Usage: -delete_from_playlist 'name' 'youtube ID'");
@@ -180,7 +180,7 @@ function start() {
             name: "delete_playlist",
             description: "Deletes a playlist",
             adminOnly: false,
-            usage: "-delete_playlist 'name'",
+            usage: "!delete_playlist 'name'",
             action: function (msg, arguments) {
                 if (arguments.length < 1) {
                     msg.reply("Usage: -delete_playlist 'name'");
@@ -199,7 +199,7 @@ function start() {
             name: "playlist_songs",
             description: "Prints all songs from a playlist",
             adminOnly: false,
-            usage: "-playlist_songs 'name'",
+            usage: "!playlist_songs 'name'",
             action: function (msg, arguments) {
                 if (arguments.length < 1) {
                     msg.reply("Usage: -playlist_songs 'name'");
@@ -217,7 +217,7 @@ function start() {
             name: "playlists",
             description: "Prints all playlists",
             adminOnly: false,
-            usage: "-playlists",
+            usage: "!playlists",
             action: function (msg) {
                 let reply = "Playlists:";
                 for (let name in playlists) if (playlists.hasOwnProperty(name)) {
@@ -230,7 +230,7 @@ function start() {
             name: "select_channel",
             description: "Goes to the channel",
             adminOnly: false,
-            usage: "-select_channel 'id'",
+            usage: "!select_channel 'id'",
             action: async function (msg, arguments) {
                 if (arguments.length < 1) {
                     msg.reply("Usage: -select_channel 'id'");
@@ -273,7 +273,7 @@ function start() {
             name: "disconnect",
             description: "Disconnects from the current channel",
             adminOnly: false,
-            usage: "-disconnect",
+            usage: "!disconnect",
             action: function (msg, arguments) {
                 if (voiceConnection) voiceConnection.disconnect();
                 else {
@@ -291,7 +291,7 @@ function start() {
             name: "shutdown",
             description: "Shuts down the bot",
             adminOnly: true,
-            usage: "-shutdown",
+            usage: "!shutdown",
             action: function (msg, arguments) {
                 console.log("Shutdown requested");
                 process.exit(0);
@@ -301,7 +301,7 @@ function start() {
             name: "gc",
             description: "Runs the garbage collector",
             adminOnly: true,
-            usage: "-gc",
+            usage: "!gc",
             action: function (msg, arguments) {
                 console.log("GC requested");
                 gc();
@@ -311,7 +311,7 @@ function start() {
             name: "stats",
             description: "Shows some stats",
             adminOnly: false,
-            usage: "-stats",
+            usage: "!stats",
             action: function (msg, arguments) {
                 let result = `Seconds running: ${ (new Date().getTime() - startTime.getTime()) / 1000 }\n`;
                 result += `Heap memory usage: ${process.memoryUsage().heapUsed}b\n`;
@@ -324,7 +324,7 @@ function start() {
             name: "play_next",
             description: "Plays the next song",
             adminOnly: false,
-            usage: "-play_next",
+            usage: "!play_next",
             action: function (msg, arguments) {
                 if (currentPlaylist && typeof songId !== "undefined") {
                     playSong(msg);
@@ -337,7 +337,7 @@ function start() {
             name: "stop",
             description: "Stops playing",
             adminOnly: false,
-            usage: "-stop",
+            usage: "!stop",
             action: function (msg, arguments) {
                 currentPlaylist = undefined;
                 songId = undefined;
@@ -348,7 +348,7 @@ function start() {
             name: "play_playlist",
             description: "Plays a playlist",
             adminOnly: false,
-            usage: "-play_playlist 'name'",
+            usage: "!play_playlist 'name'",
             action: function (msg, arguments) {
                 if (arguments.length < 1) {
                     msg.reply("Usage: -play_playlist 'name'");
@@ -368,7 +368,7 @@ function start() {
             name: "set_play_mode",
             description: "Sets the play mode",
             adminOnly: false,
-            usage: "-set_play_mode 'consequent|random'",
+            usage: "!set_play_mode 'consequent|random'",
             action: function (msg, arguments) {
                 if (arguments.length < 1) {
                     msg.reply("Usage: -set_play_mode 'consequent|random'");
@@ -387,7 +387,7 @@ function start() {
 
     client.on('message', msg => {
         if (msg.author.bot) return;
-        if (msg.content.indexOf('-') !== 0) return;
+        if (msg.content.indexOf('!') !== 0) return;
         if (msg.channel.id !== "710439016935456768") return;
         //msg.reply(msg.content.slice(1));
         console.log(msg.author.tag + ': ' + msg.content.slice(1));
