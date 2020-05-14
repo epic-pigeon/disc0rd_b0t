@@ -230,7 +230,7 @@ function start() {
                     msg.reply(`An error occurred: ${e.toString()}`);
                     return;
                 }
-                if (voiceConnection) voiceConnection.disconnect();
+                if (voiceConnection) await voiceConnection.disconnect();
                 voiceConnection = newConnection;
                 msg.reply(`Successfully connected to ${id}`);
                 playSong();
