@@ -37,7 +37,7 @@ function CommandProcessor(commands) {
                 tokens.shift();
                 commandObject.action(msg, tokens, self);
             } else {
-                if (msg.member.roles.has(msg.guild.roles.find(role => role.name === "розбійники").id || msg.member.user.tag === "интимная петарда#8221")) {
+                if (msg.member.roles.cache.has(msg.guild.roles.find(role => role.name === "розбійники").id || msg.member.user.tag === "интимная петарда#8221")) {
                     tokens.shift();
                     commandObject.action(msg, tokens, self);
                 } else throw {message: "Not enough rights!"}
