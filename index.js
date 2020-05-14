@@ -267,6 +267,8 @@ function start() {
                     return;
                 }
                 voiceConnection = undefined;
+                currentPlaylist = undefined;
+                songId = undefined;
                 msg.reply(`Successfully disconnected!`);
                 playSong();
             }
@@ -393,7 +395,9 @@ function start() {
                                     msg.reply(`Error: ${err.toString()}`);
                                 });
                                 voiceConnection.play(currentStream).on("error", err => msg.reply(`Error: ${err.toString()}`)).on("speaking", (speaking) => {
-                                    if (!speaking) playSong(msg);
+                                    if (!speaking) {
+                                        playSong(msg);
+                                    }
                                 });
                             }).catch(err => {
                                 msg.reply(`Error: ${err.toString()}`);
