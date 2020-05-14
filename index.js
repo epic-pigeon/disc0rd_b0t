@@ -6,6 +6,14 @@ const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
 const ytdl = require('ytdl-core');
 
+function gc() {
+    if (global.gc) {
+        global.gc();
+    } else {
+        console.log(process.argv.map(arg => `"${arg}"`).splice(1, 0, "--expose-gc"))
+    }
+}
+
 setInterval(() => {
     console.log("Mem usage", process.memoryUsage().heapUsed);
 }, 1000);
