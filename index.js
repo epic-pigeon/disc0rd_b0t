@@ -6,7 +6,7 @@ const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
 const ytdl = require('ytdl-core');
 
-setTimeout(() => {
+setInterval(() => {
     console.log("Mem usage", process.memoryUsage().heapUsed);
 }, 1000);
 
