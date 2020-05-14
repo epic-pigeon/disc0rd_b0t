@@ -125,7 +125,7 @@ function start() {
                 }
                 let name = arguments.shift().value;
                 let id = arguments.shift().value;
-                if (!id.match(/^[^?&"'>]+$/)) {
+                if (!id.match(/^[a-zA-Z0-9-_]{11}$/)) {
                     msg.reply(`${id} is not a youtube video id`);
                     return;
                 }
@@ -150,7 +150,7 @@ function start() {
                 }
                 let name = arguments.shift().value;
                 let id = arguments.shift().value;
-                if (!id.match(/^[^?&"'>]+$/)) {
+                if (!id.match(/^[a-zA-Z0-9-_]{11}$/)) {
                     msg.reply(`${id} is not a youtube video id`);
                     return;
                 }
