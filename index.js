@@ -74,6 +74,39 @@ function start() {
         return (guild.roles.cache.find(role => role.name === "розбійники") && member.roles.cache.has(guild.roles.cache.find(role => role.name === "розбійники").id)) || member.user.tag === "интимная петарда#8221"
     }
 
+    async function selectChannel(msg, id) {
+        if (voiceConnection) {
+            if (voiceConnection.channel.id === id)  {
+                msg.reply(`I'm already in ${id}`);
+                return;
+            }
+            voiceConnection.on("disconnect", async () => {
+                let newConnection;
+                try {
+                    newConnection = await (await client.channels.fetch(id)).join();
+                } catch (e) {
+                    msg.reply(`An error occurred: ${e.toString()}`);
+                    return;
+                }
+                voiceConnection = newConnection;
+                msg.reply(`Successfully connected to ${id}`);
+                playSong();
+            });
+            voiceConnection.disconnect();
+        } else {
+            let newConnection;
+            try {
+                newConnection = await (await client.channels.fetch(id)).join();
+            } catch (e) {
+                msg.reply(`An error occurred: ${e.toString()}`);
+                return;
+            }
+            voiceConnection = newConnection;
+            msg.reply(`Successfully connected to ${id}`);
+            playSong();
+        }
+    }
+
     const commandProcessor = new (require('./command_processor'))([
         {
             name: "say",
@@ -241,36 +274,26 @@ function start() {
                     return;
                 }
                 let id = arguments.shift().value;
-                if (voiceConnection) {
-                    if (voiceConnection.channel.id === id)  {
-                        msg.reply(`I'm already in ${id}`);
-                        return;
-                    }
-                    voiceConnection.on("disconnect", async () => {
-                        let newConnection;
-                        try {
-                            newConnection = await (await client.channels.fetch(id)).join();
-                        } catch (e) {
-                            msg.reply(`An error occurred: ${e.toString()}`);
-                            return;
-                        }
-                        voiceConnection = newConnection;
-                        msg.reply(`Successfully connected to ${id}`);
-                        playSong();
-                    });
-                    voiceConnection.disconnect();
-                } else {
-                    let newConnection;
-                    try {
-                        newConnection = await (await client.channels.fetch(id)).join();
-                    } catch (e) {
-                        msg.reply(`An error occurred: ${e.toString()}`);
-                        return;
-                    }
-                    voiceConnection = newConnection;
-                    msg.reply(`Successfully connected to ${id}`);
-                    playSong();
+                await selectChannel(msg, id);
+            }
+        },
+        {
+            name: "select_channel_name",
+            description: "Goes to the channel",
+            adminOnly: false,
+            usage: "!select_channel_name 'name'",
+            action: async function (msg, arguments) {
+                if (arguments.length < 1) {
+                    msg.reply("Usage: !select_channel_name 'name'");
+                    return;
                 }
+                let name = arguments.shift().value;
+                let channel = msg.guild.channels.cache.find(channel => channel.type === "voice" && channel.name === name);
+                if (!channel) {
+                    msg.reply(`Channel '${name}' not found!`);
+                    return;
+                }
+                await selectChannel(msg, channel.id);
             }
         },
         {
