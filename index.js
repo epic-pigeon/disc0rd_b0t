@@ -107,6 +107,8 @@ function start() {
         }
     }
 
+    const timers = [];
+
     const commandProcessor = new (require('./command_processor'))([
         {
             name: "say",
@@ -403,11 +405,15 @@ function start() {
                 let command = arguments.shift().value.slice(1);
                 let id = setInterval(() => {
                     if (new Date().getHours() === hours && new Date().getMinutes() === mins) {
-                        self.process(command, msg);
+                        try {
+                            self.process(command, msg);
+                        } catch (e) {
+                            msg.reply(e.toString());
+                        }
                     }
                 }, 60_000);
-                console.log(id);
-                msg.reply(`Interval initiated! ID: ${id}`);
+                timers.push(id);
+                msg.reply(`Interval initiated! ID: ${timers.length-1}`);
             }
         },
         {
@@ -417,7 +423,8 @@ function start() {
             usage: "!stop_exec",
             action: function (msg, arguments) {
                 let id = parseInt(arguments.shift().value);
-                clearInterval(id);
+                clearInterval(timers[id]);
+                timers[id] = undefined;
                 msg.reply("Interval cleared successfully");
             }
         },
