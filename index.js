@@ -400,12 +400,13 @@ function start() {
             action: function (msg, arguments, self) {
                 let hours = parseInt(arguments.shift().value);
                 let mins = parseInt(arguments.shift().value);
-                let command = arguments.shift().value;
+                let command = arguments.shift().value.slice(1);
                 let id = setInterval(() => {
                     if (new Date().getHours() === hours && new Date().getMinutes() === mins) {
                         self.process(command, msg);
                     }
                 }, 60_000);
+                console.log(id);
                 msg.reply(`Interval initiated! ID: ${id}`);
             }
         },
