@@ -278,6 +278,23 @@ function start() {
             }
         },
         {
+            name: "say_to_channel",
+            description: "Says something to a specific channel",
+            adminOnly: false,
+            usage: "!say_to_channel 'id' 'smth'...",
+            action: async function (msg, arguments) {
+                if (arguments.length < 2) {
+                    msg.reply("Usage: !select_channel 'id' 'smth'...");
+                    return;
+                }
+                let id = arguments.shift().value;
+                let channel = await client.channels.fetch(id);
+                for (const {value: arg} of arguments) {
+                    await channel.send(arg);
+                }
+            }
+        },
+        {
             name: "select_channel_name",
             description: "Goes to the channel",
             adminOnly: false,
@@ -364,6 +381,43 @@ function start() {
                 songId = undefined;
                 msg.reply(`Successfully disconnected!`);
                 playSong();
+            }
+        },
+        {
+            name: "time",
+            description: "Prints current time",
+            adminOnly: false,
+            usage: "!time",
+            action: function (msg, arguments) {
+                msg.reply(new Date().toUTCString());
+            }
+        },
+        {
+            name: "exec_at",
+            description: "Executes a certain command at a specific time",
+            adminOnly: false,
+            usage: "!exec_at",
+            action: function (msg, arguments, self) {
+                let hours = parseInt(arguments.shift().value);
+                let mins = parseInt(arguments.shift().value);
+                let command = arguments.shift().value;
+                let id = setInterval(() => {
+                    if (new Date().getHours() === hours && new Date().getMinutes() === mins) {
+                        self.process(command, msg);
+                    }
+                });
+                msg.reply(`Interval initiated! ID: ${id}`);
+            }
+        },
+        {
+            name: "stop_exec",
+            description: "Stops execution of an interval",
+            adminOnly: false,
+            usage: "!stop_exec",
+            action: function (msg, arguments) {
+                let id = parseInt(arguments.shift().value);
+                clearInterval(id);
+                msg.reply("Interval cleared successfully");
             }
         },
         {
