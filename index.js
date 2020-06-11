@@ -405,7 +405,7 @@ function start() {
                     if (new Date().getHours() === hours && new Date().getMinutes() === mins) {
                         self.process(command, msg);
                     }
-                });
+                }, 60_000);
                 msg.reply(`Interval initiated! ID: ${id}`);
             }
         },
